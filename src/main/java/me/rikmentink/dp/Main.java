@@ -9,22 +9,21 @@ import java.util.Properties;
 
 public class Main {
     private static String DATABASE_URL = "jdbc:postgresql://localhost/hu-dp";
+    private static Connection conn;
 
-    public static void main(String[] args) {
-        try {
-            Connection conn = getConnection();
-            ResultSet users = getAllUsers(conn);
+    public static void main(String[] args) throws SQLException {
+        conn = getConnection();
+        ResultSet users = getAllUsers(conn);
 
-            System.out.println("Alle reizigers:");
-            int count = 1;
-            while (users.next()) {
-                System.out.println(
-                        String.format("  #%s: %s (%s)", count, users.getString("name"), users.getString("birthdate")));   
-                count++;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        System.out.println("Alle reizigers:");
+        int count = 1;
+        while (users.next()) {
+            System.out.println(
+                    String.format("  #%s: %s (%s)", count, users.getString("name"), users.getString("birthdate")));   
+            count++;
         }
+
+        closeConnection();
     }
 
     private static Connection getConnection() throws SQLException {
@@ -32,6 +31,12 @@ public class Main {
         props.setProperty("user", "rikmentink");
         props.setProperty("password", "test");
         return DriverManager.getConnection(DATABASE_URL, props);
+    }
+
+    private static void closeConnection() throws SQLException {
+        if (conn != null) {
+            conn.close();
+        }
     }
 
     private static ResultSet getAllUsers(Connection conn) throws SQLException {
