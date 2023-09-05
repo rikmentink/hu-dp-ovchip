@@ -23,31 +23,32 @@ public class ReizigerDAOPsql implements ReizigerDAO {
         stmt.setString(2, reiziger.getVoorletters());
         stmt.setString(3, reiziger.getTussenvoegsel());
         stmt.setString(4, reiziger.getAchternaam());
-        stmt.setString(5, reiziger.getGeboortedatum().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        stmt.setObject(5, reiziger.getGeboortedatum());
         return stmt.execute();
     }
 
     @Override
     public boolean update(Reiziger reiziger) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("UPDATE"); // TODO: Juiste update statement maken.
+        PreparedStatement stmt = conn.prepareStatement("UPDATE reiziger SET reiziger_id = ?, voorletters = ?, tussenvoegsel = ?, achternaam = ?, geboortedatum = ? WHERE reiziger_id = ?");
         stmt.setInt(1, reiziger.getId());
         stmt.setString(2, reiziger.getVoorletters());
         stmt.setString(3, reiziger.getTussenvoegsel());
         stmt.setString(4, reiziger.getAchternaam());
         stmt.setObject(5, reiziger.getGeboortedatum());
+        stmt.setInt(6, reiziger.getId());
         return stmt.executeUpdate() > 0;
     }
 
     @Override
     public boolean delete(Reiziger reiziger) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("DELETE FROM reiziger WHERE id = ?");
+        PreparedStatement stmt = conn.prepareStatement("DELETE FROM reiziger WHERE reiziger_id = ?");
         stmt.setInt(1, reiziger.getId());
         return stmt.execute();
     }
 
     @Override
     public List<Reiziger> findById(int id) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM reiziger WHERE id = ?");
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM reiziger WHERE reiziger_id = ?");
         stmt.setInt(1, id);
         ResultSet rs = stmt.executeQuery();
 

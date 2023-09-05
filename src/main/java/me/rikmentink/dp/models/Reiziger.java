@@ -1,7 +1,8 @@
 package me.rikmentink.dp.models;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
 
 public class Reiziger {
     private int id;
@@ -59,11 +60,12 @@ public class Reiziger {
     }
 
     public String getNaam() {
-        return String.format("%s %s %s", this.getVoorletters(), this.getTussenvoegsel(), this.getAchternaam());
+        List<String> values = Arrays.asList(this.getVoorletters(), this.getTussenvoegsel(), this.getAchternaam());
+        return String.format(String.join(" ", values));
     }
 
     @Override
     public String toString() {
-        return String.format("%s (%s)", this.getGeboortedatum().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        return String.format("%s (%s)", this.getNaam(), this.getGeboortedatum());
     }
 }
