@@ -10,6 +10,7 @@ public class Reiziger {
     private String tussenvoegsel;
     private String achternaam;
     private LocalDate geboortedatum;
+    private Adres adres;
 
     public Reiziger(int id, String voorletters, String tussenvoegsel, String achternaam, LocalDate geboortedatum) {
         this.id = id;
@@ -64,8 +65,16 @@ public class Reiziger {
         return String.format(String.join(" ", values));
     }
 
+    public Adres getAdres() {
+        return this.adres;
+    }
+
+    public void setAdres(Adres adres) {
+        this.adres = adres;
+    }
+
     @Override
     public String toString() {
-        return String.format("%s (%s)", this.getNaam(), this.getGeboortedatum());
+        return String.format("#%s %s, geb. %s", this.getId(), this.getNaam(), this.getGeboortedatum());
     }
 }
