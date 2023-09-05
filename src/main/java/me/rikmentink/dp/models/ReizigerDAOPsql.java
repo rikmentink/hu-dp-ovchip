@@ -29,13 +29,12 @@ public class ReizigerDAOPsql implements ReizigerDAO {
 
     @Override
     public boolean update(Reiziger reiziger) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("UPDATE reiziger SET reiziger_id = ?, voorletters = ?, tussenvoegsel = ?, achternaam = ?, geboortedatum = ? WHERE reiziger_id = ?");
-        stmt.setInt(1, reiziger.getId());
-        stmt.setString(2, reiziger.getVoorletters());
-        stmt.setString(3, reiziger.getTussenvoegsel());
-        stmt.setString(4, reiziger.getAchternaam());
-        stmt.setObject(5, reiziger.getGeboortedatum());
-        stmt.setInt(6, reiziger.getId());
+        PreparedStatement stmt = conn.prepareStatement("UPDATE reiziger SET voorletters = ?, tussenvoegsel = ?, achternaam = ?, geboortedatum = ? WHERE reiziger_id = ?");
+        stmt.setString(1, reiziger.getVoorletters());
+        stmt.setString(2, reiziger.getTussenvoegsel());
+        stmt.setString(3, reiziger.getAchternaam());
+        stmt.setObject(4, reiziger.getGeboortedatum());
+        stmt.setInt(5, reiziger.getId());
         return stmt.executeUpdate() > 0;
     }
 
@@ -47,23 +46,22 @@ public class ReizigerDAOPsql implements ReizigerDAO {
     }
 
     @Override
-    public List<Reiziger> findById(int id) throws SQLException {
+    public Reiziger findById(int id) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("SELECT * FROM reiziger WHERE reiziger_id = ?");
         stmt.setInt(1, id);
         ResultSet rs = stmt.executeQuery();
 
-        List<Reiziger> reizigers = new ArrayList<Reiziger>();
+        Reiziger reiziger = null;
         while (rs.next()) {
-            Reiziger reiziger = new Reiziger(
+            reiziger = new Reiziger(
                 rs.getInt("reiziger_id"),
                 rs.getString("voorletters"),
                 rs.getString("tussenvoegsel"),
                 rs.getString("achternaam"),
                 LocalDate.parse(rs.getString("geboortedatum"), DateTimeFormatter.ofPattern("yyyy-MM-dd"))
             );
-            reizigers.add(reiziger);
         }
-        return reizigers;
+        return reiziger;
     }
 
     @Override
