@@ -72,6 +72,7 @@ public class Adres {
 
     @Override
     public String toString() {
-        return String.format("#%s %s %s, %s %s", this.getId(), this.getStraat(), this.getHuisnummer(), this.getPostcode(), this.getWoonplaats());
+        return "Adres [id=" + id + ", postcode=" + postcode + ", huisnummer=" + huisnummer + ", straat=" + straat
+                + ", woonplaats=" + woonplaats + ", reiziger=" + reiziger + "]";
     }
 }

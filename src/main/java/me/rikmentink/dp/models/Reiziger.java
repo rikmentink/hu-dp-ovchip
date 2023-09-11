@@ -10,8 +10,6 @@ public class Reiziger {
     private String tussenvoegsel;
     private String achternaam;
     private LocalDate geboortedatum;
-    
-    private Adres adres;
 
     public Reiziger(int id, String voorletter, String tussenvoegsel, String achternaam, LocalDate geboortedatum) {
         this.id = id;
@@ -66,15 +64,8 @@ public class Reiziger {
     }
 
     public String getNaam() {
-        return Stream.of(this.getVoorletterWithDots(), this.getTussenvoegsel(), this.getAchternaam()).filter(v -> v != null && !v.isEmpty()).collect(Collectors.joining(" "));
-    }
-
-    public Adres getAdres() {
-        return this.adres;
-    }
-
-    public void setAdres(Adres adres) {
-        this.adres = adres;
+        return Stream.of(this.getVoorletterWithDots(), this.getTussenvoegsel(), this.getAchternaam())
+                .filter(v -> v != null && !v.isEmpty()).collect(Collectors.joining(" "));
     }
 
     @Override

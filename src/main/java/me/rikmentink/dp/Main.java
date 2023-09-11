@@ -82,7 +82,7 @@ public class Main {
         List<Adres> adressen = adao.findAll();
         System.out.println("[Test] AdresDAO.findAll() geeft de volgende adressen:");
         for (Adres a : adressen) {
-            System.out.println(String.format("Reiziger {%s, Adres {%s}}", a.getReiziger(), a));
+            System.out.println(a);
         }
 
         // Maak een nieuwe reiziger aan en persisteer deze in de database
@@ -108,5 +108,7 @@ public class Main {
         adao.delete(adres);
         adressen = adao.findAll();
         System.out.print(adressen.size() + " adressen");
+        
+        rdao.delete(reiziger);
     }
 }
