@@ -1,6 +1,7 @@
 package me.rikmentink.dp.models;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,7 +11,9 @@ public class Reiziger {
     private String tussenvoegsel;
     private String achternaam;
     private LocalDate geboortedatum;
+
     private Adres adres;
+    private List<OVChipkaart> kaarten = new ArrayList<OVChipkaart>();
 
     public Reiziger(int id, String voorletters, String tussenvoegsel, String achternaam, LocalDate geboortedatum) {
         this.id = id;
