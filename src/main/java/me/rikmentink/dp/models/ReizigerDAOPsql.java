@@ -46,6 +46,10 @@ public class ReizigerDAOPsql implements ReizigerDAO {
         stmt.setObject(5, reiziger.getGeboortedatum());
         stmt.setInt(6, reiziger.getId());
 
+        if (reiziger.getAdres() != null) {
+            adao.update(reiziger.getAdres());
+        }
+
         return stmt.executeUpdate() > 0;
     }
 
@@ -75,7 +79,8 @@ public class ReizigerDAOPsql implements ReizigerDAO {
                 rs.getString("voorletters"),
                 rs.getString("tussenvoegsel"),
                 rs.getString("achternaam"),
-                LocalDate.parse(rs.getString("geboortedatum"), DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                LocalDate.parse(rs.getString("geboortedatum"), DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                adao.findByReiziger(reiziger)
             );
             reiziger.setAdres(adao.findByReiziger(reiziger));
         }
