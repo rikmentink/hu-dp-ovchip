@@ -84,15 +84,12 @@ public class Main {
         for (Adres a : adressen) {
             System.out.println(a);
         }
-
-        // Maak een nieuwe reiziger aan en persisteer deze in de database
-        Reiziger reiziger = new Reiziger(77, "S", "", "Boers", LocalDate.parse("1981-03-14", DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        rdao.save(reiziger);
-
-        // Maak een nieuwe adres aan en persisteer deze in de database
-        Adres adres = new Adres(12, "3584 CS", "15", "Heidelberglaan", "Utrecht", reiziger);
+        
+        // Maak een nieuw adres aan en persisteer in de database
         System.out.print("[Test] Eerst " + adressen.size() + " adressen, na AdresDAO.save() ");
-        adao.save(adres);
+        Adres adres = new Adres(12, "3584 CS", "15", "Heidelberglaan", "Utrecht");
+        Reiziger reiziger = new Reiziger(77, "S", "", "Boers", LocalDate.parse("1981-03-14", DateTimeFormatter.ofPattern("yyyy-MM-dd")), adres);
+        rdao.save(reiziger);
         adressen = adao.findAll();
         System.out.println(adressen.size() + " adressen\n");
 
@@ -103,12 +100,10 @@ public class Main {
         adres = adao.findById(adres.getId());
         System.out.println(", na AdresDAO.update() is de postcode " + adres.getPostcode());
 
-        // Verwijder de zojuist gemaakte reiziger en persisteer
+        // Verwijder de zojuist gemaakte reiziger met zijn adres en persisteer
         System.out.print("[Test] Eerst " + adressen.size() + " adressen, na AdresDAO.delete() ");
-        adao.delete(adres);
+        rdao.delete(reiziger);
         adressen = adao.findAll();
         System.out.print(adressen.size() + " adressen");
-        
-        rdao.delete(reiziger);
     }
 }

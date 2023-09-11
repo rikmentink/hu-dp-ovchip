@@ -9,22 +9,20 @@ import java.util.List;
 
 public class AdresDAOPsql implements AdresDAO {
     private Connection conn;
-    private ReizigerDAO rdao;
 
     public AdresDAOPsql(Connection conn) {
         this.conn = conn;
-        rdao = new ReizigerDAOPsql(conn);
     }
 
     @Override
-    public boolean save(Adres adres) throws SQLException {
+    public boolean save(Adres adres, int reizigerId) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("INSERT INTO adres VALUES (?,?,?,?,?,?)");
         stmt.setInt(1, adres.getId());
         stmt.setString(2, adres.getPostcode());
         stmt.setString(3, adres.getHuisnummer());
         stmt.setString(4, adres.getStraat());
         stmt.setString(5, adres.getWoonplaats());
-        stmt.setInt(6, adres.getReiziger().getId());
+        stmt.setInt(6, reizigerId);
         return stmt.execute();
     }
 
@@ -60,8 +58,7 @@ public class AdresDAOPsql implements AdresDAO {
                     rs.getString("postcode"),
                     rs.getString("huisnummer"),
                     rs.getString("straat"),
-                    rs.getString("woonplaats"),
-                    rdao.findById(rs.getInt("reiziger_id"))
+                    rs.getString("woonplaats")
             );
         }
         return adres;
@@ -80,8 +77,8 @@ public class AdresDAOPsql implements AdresDAO {
                     rs.getString("postcode"),
                     rs.getString("huisnummer"),
                     rs.getString("straat"),
-                    rs.getString("woonplaats"),
-                    reiziger);
+                    rs.getString("woonplaats")
+            );
         }
         return adres;
     }
@@ -98,8 +95,7 @@ public class AdresDAOPsql implements AdresDAO {
                     rs.getString("postcode"),
                     rs.getString("huisnummer"),
                     rs.getString("straat"),
-                    rs.getString("woonplaats"),
-                    rdao.findById(rs.getInt("reiziger_id"))
+                    rs.getString("woonplaats")
             );
             adressen.add(adres);
         }

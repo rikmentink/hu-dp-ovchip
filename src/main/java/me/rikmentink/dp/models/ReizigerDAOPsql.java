@@ -11,9 +11,11 @@ import java.util.List;
 
 public class ReizigerDAOPsql implements ReizigerDAO {
     private Connection conn;
+    private AdresDAO adao;
 
     public ReizigerDAOPsql(Connection conn) {
         this.conn = conn;
+        this.adao = new AdresDAOPsql(conn);
     }
 
     @Override
@@ -24,7 +26,14 @@ public class ReizigerDAOPsql implements ReizigerDAO {
         stmt.setString(3, reiziger.getTussenvoegsel());
         stmt.setString(4, reiziger.getAchternaam());
         stmt.setObject(5, reiziger.getGeboortedatum());
-        return stmt.execute();
+
+        int rowsAffected = stmt.executeUpdate();
+
+        if (rowsAffected > 0 && reiziger.getAdres() != null) {
+            adao.save(reiziger.getAdres(), reiziger.getId());
+        }
+        
+        return rowsAffected > 0;
     }
 
     @Override
@@ -36,11 +45,18 @@ public class ReizigerDAOPsql implements ReizigerDAO {
         stmt.setString(4, reiziger.getAchternaam());
         stmt.setObject(5, reiziger.getGeboortedatum());
         stmt.setInt(6, reiziger.getId());
+
         return stmt.executeUpdate() > 0;
     }
 
     @Override
     public boolean delete(Reiziger reiziger) throws SQLException {
+        System.out.println("Deleting.");
+        if (reiziger.getAdres() != null) {
+            System.out.println("reiziger has adres");
+            adao.delete(reiziger.getAdres());
+        }
+
         PreparedStatement stmt = conn.prepareStatement("DELETE FROM reiziger WHERE reiziger_id = ?");
         stmt.setInt(1, reiziger.getId());
         return stmt.execute();
@@ -61,6 +77,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
                 rs.getString("achternaam"),
                 LocalDate.parse(rs.getString("geboortedatum"), DateTimeFormatter.ofPattern("yyyy-MM-dd"))
             );
+            reiziger.setAdres(adao.findByReiziger(reiziger));
         }
         return reiziger;
     }
@@ -80,6 +97,8 @@ public class ReizigerDAOPsql implements ReizigerDAO {
                 rs.getString("achternaam"),
                 LocalDate.parse(rs.getString("geboortedatum"), DateTimeFormatter.ofPattern("yyyy-MM-dd"))
             );
+            reiziger.setAdres(adao.findByReiziger(reiziger));
+
             reizigers.add(reiziger);
         }
         return reizigers;
@@ -100,6 +119,8 @@ public class ReizigerDAOPsql implements ReizigerDAO {
                 rs.getString("achternaam"),
                 LocalDate.parse(rs.getString("geboortedatum"), DateTimeFormatter.ofPattern("yyyy-MM-dd"))
             );
+            reiziger.setAdres(adao.findByReiziger(reiziger));
+            
             reizigers.add(reiziger);
         }
         return reizigers;
