@@ -20,7 +20,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
     public boolean save(Reiziger reiziger) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("INSERT INTO reiziger VALUES (?,?,?,?,?)");
         stmt.setInt(1, reiziger.getId());
-        stmt.setString(2, reiziger.getVoorletters());
+        stmt.setString(2, reiziger.getVoorletter());
         stmt.setString(3, reiziger.getTussenvoegsel());
         stmt.setString(4, reiziger.getAchternaam());
         stmt.setObject(5, reiziger.getGeboortedatum());
@@ -31,7 +31,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
     public boolean update(Reiziger reiziger) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("UPDATE reiziger SET reiziger_id = ?, voorletters = ?, tussenvoegsel = ?, achternaam = ?, geboortedatum = ? WHERE reiziger_id = ?");
         stmt.setInt(1, reiziger.getId());
-        stmt.setString(2, reiziger.getVoorletters());
+        stmt.setString(2, reiziger.getVoorletter());
         stmt.setString(3, reiziger.getTussenvoegsel());
         stmt.setString(4, reiziger.getAchternaam());
         stmt.setObject(5, reiziger.getGeboortedatum());

@@ -1,19 +1,19 @@
 package me.rikmentink.dp.models;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Reiziger {
     private int id;
-    private String voorletters;
+    private String voorletter;
     private String tussenvoegsel;
     private String achternaam;
     private LocalDate geboortedatum;
 
-    public Reiziger(int id, String voorletters, String tussenvoegsel, String achternaam, LocalDate geboortedatum) {
+    public Reiziger(int id, String voorletter, String tussenvoegsel, String achternaam, LocalDate geboortedatum) {
         this.id = id;
-        this.voorletters = voorletters;
+        this.voorletter = voorletter;
         this.tussenvoegsel = tussenvoegsel;
         this.achternaam = achternaam;
         this.geboortedatum = geboortedatum;
@@ -27,12 +27,12 @@ public class Reiziger {
         this.id = id;
     }
 
-    public String getVoorletters() {
-        return this.voorletters;
+    public String getVoorletter() {
+        return this.voorletter;
     }
 
-    public void setVoorletters(String voorletters) {
-        this.voorletters = voorletters;
+    public void setVoorletter(String voorletter) {
+        this.voorletter = voorletter;
     }
 
     public String getTussenvoegsel() {
@@ -59,13 +59,16 @@ public class Reiziger {
         this.geboortedatum = geboortedatum;
     }
 
+    public String getVoorletterWithDots() {
+        return String.join(".", this.getVoorletter()) + ".";
+    }
+
     public String getNaam() {
-        List<String> values = Arrays.asList(this.getVoorletters(), this.getTussenvoegsel(), this.getAchternaam());
-        return String.format(String.join(" ", values));
+        return Stream.of(this.getVoorletterWithDots(), this.getTussenvoegsel(), this.getAchternaam()).filter(v -> v != null && !v.isEmpty()).collect(Collectors.joining(" "));
     }
 
     @Override
     public String toString() {
-        return String.format("%s (%s)", this.getNaam(), this.getGeboortedatum());
+        return "Reiziger [id=" + id + ", naam=" + this.getNaam() + ", geboortedatum=" + geboortedatum + "]";
     }
 }
