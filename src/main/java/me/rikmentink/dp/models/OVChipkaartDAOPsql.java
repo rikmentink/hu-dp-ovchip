@@ -20,7 +20,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
 
     @Override
     public boolean save(OVChipkaart kaart) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("INSERT INTO ov-chipkaart VALUES (?,?,?,?,?)");
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO ov_chipkaart VALUES (?,?,?,?,?)");
         stmt.setInt(1, kaart.getKaartnummer());
         stmt.setObject(2, kaart.getGeldigTot());
         stmt.setInt(3, kaart.getKlasse());
@@ -31,7 +31,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
 
     @Override
     public boolean update(OVChipkaart kaart) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("UPDATE ov-chipkaart SET geldig_tot = ?, klasse = ?, saldo = ?, reiziger_id = ? WHERE kaart_nummer = ?");
+        PreparedStatement stmt = conn.prepareStatement("UPDATE ov_chipkaart SET geldig_tot = ?, klasse = ?, saldo = ?, reiziger_id = ? WHERE kaart_nummer = ?");
         stmt.setObject(1, kaart.getGeldigTot());
         stmt.setInt(2, kaart.getKlasse());
         stmt.setDouble(3, kaart.getSaldo());
@@ -42,14 +42,14 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
 
     @Override
     public boolean delete(OVChipkaart kaart) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("DELETE FROM ov-chipkaart WHERE kaart_nummer = ?");
+        PreparedStatement stmt = conn.prepareStatement("DELETE FROM ov_chipkaart WHERE kaart_nummer = ?");
         stmt.setInt(1, kaart.getKaartnummer());
         return stmt.execute();
     }
 
     @Override
     public OVChipkaart findById(int id) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM ov-chipkaart WHERE kaart_nummer = ?");
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM ov_chipkaart WHERE kaart_nummer = ?");
         stmt.setInt(1, id);
         ResultSet rs = stmt.executeQuery();
 
@@ -68,7 +68,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
 
     @Override
     public List<OVChipkaart> findByReiziger(Reiziger reiziger) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM ov-chipkaart WHERE reiziger_id = ?");
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM ov_chipkaart WHERE reiziger_id = ?");
         stmt.setInt(1, reiziger.getId());
         ResultSet rs = stmt.executeQuery();
 
@@ -89,7 +89,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
 
     @Override
     public List<OVChipkaart> findAll() throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM ov-chipkaart");
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM ov_chipkaart");
         ResultSet rs = stmt.executeQuery();
 
         List<OVChipkaart> kaarten = new ArrayList<OVChipkaart>();
