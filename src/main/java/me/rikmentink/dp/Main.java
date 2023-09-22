@@ -15,6 +15,9 @@ import me.rikmentink.dp.models.AdresDAOPsql;
 import me.rikmentink.dp.models.OVChipkaart;
 import me.rikmentink.dp.models.OVChipkaartDAO;
 import me.rikmentink.dp.models.OVChipkaartDAOPsql;
+import me.rikmentink.dp.models.Product;
+import me.rikmentink.dp.models.ProductDAO;
+import me.rikmentink.dp.models.ProductDAOPsql;
 import me.rikmentink.dp.models.Reiziger;
 import me.rikmentink.dp.models.ReizigerDAO;
 import me.rikmentink.dp.models.ReizigerDAOPsql;
@@ -29,10 +32,12 @@ public class Main {
         ReizigerDAO rdao = new ReizigerDAOPsql(conn);
         AdresDAO adao = new AdresDAOPsql(conn);
         OVChipkaartDAO odao = new OVChipkaartDAOPsql(conn);
+        ProductDAO pdao = new ProductDAOPsql(conn);
         
         testReizigerDAO(rdao);
         testAdresDAO(rdao, adao);
         testOVChipkaartDAO(rdao, odao);
+        testProductDAO(pdao);
 
         closeConnection();
     }
@@ -153,5 +158,36 @@ public class Main {
 
         // Verwijder de tijdelijk gemaakte reiziger
         rdao.delete(reiziger);
+    }
+
+    private static void testProductDAO(ProductDAO pdao) throws SQLException {
+        System.out.println("\n\n---------- Test ProductDAO -------------");
+
+        // Haal alle producten op uit de database
+        List<Product> producten = pdao.findAll();
+        System.out.println("[Test] ProductDAO.findAll() geeft de volgende producten:");
+        for (Product p : producten) {
+            System.out.println(p);
+        }
+
+        // Maak een nieuwe producten aan en persisteer deze in de database
+        Product product = new Product(10, "Jongerendagkaart", "Voordelig een hele dag reizen voor jongeren.", 7.50);
+        System.out.print("[Test] Eerst " + producten.size() + " producten, na ProductDAO.save() ");
+        pdao.save(product);
+        producten = pdao.findAll();
+        System.out.println(producten.size() + " producten");
+
+        // Verander de zojuist gemaakte OV-chipkaart en persisteer
+        System.out.print("[Test] Eerst was de prijs " + product.getPrijs());
+        product.setPrijs(10.0);
+        pdao.update(product);
+        product = pdao.findByProductNummer(product.getProductNummer());
+        System.out.println(", na ProductDAO.update() is de prijs " + product.getPrijs());
+
+        // Verwijder de zojuist gemaakte reiziger en persisteer
+        System.out.print("[Test] Eerst " + producten.size() + " producten, na ProductDAO.delete() ");
+        pdao.delete(product);
+        producten = pdao.findAll();
+        System.out.println(producten.size() + " producten");
     }
 }

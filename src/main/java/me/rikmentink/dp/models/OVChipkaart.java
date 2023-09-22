@@ -1,6 +1,7 @@
 package me.rikmentink.dp.models;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class OVChipkaart {
     private int kaartnummer;
@@ -9,6 +10,7 @@ public class OVChipkaart {
     private double saldo;
 
     private Reiziger reiziger;
+    private List<Product> producten;
 
     public OVChipkaart(int kaartnummer, LocalDate geldigTot, int klasse, double saldo, Reiziger reiziger) {
         this.kaartnummer = kaartnummer;
@@ -62,5 +64,17 @@ public class OVChipkaart {
     public String toString() {
         return "OVChipkaart [kaartnummer=" + kaartnummer + ", geldigTot=" + geldigTot + ", klasse=" + klasse
                 + ", saldo=" + saldo + ", reiziger=" + reiziger + "]";
+    }
+
+    public void addProduct(Product product) {
+        this.producten.add(product);
+        product.setKaart(this);
+    }
+
+    public void removeProduct(Product product) {
+        if (producten.contains(product)) {
+            this.producten.remove(product);
+            product.removeKaart();
+        }
     }
 }
