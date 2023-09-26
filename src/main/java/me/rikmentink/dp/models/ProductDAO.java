@@ -8,6 +8,6 @@ public interface ProductDAO {
     public boolean update(Product product) throws SQLException;
     public boolean delete(Product product) throws SQLException;
     public Product findByProductNummer(int productNummer) throws SQLException;
+    public List<Product> findByOVChipkaart(OVChipkaart kaart) throws SQLException;
     public List<Product> findAll() throws SQLException;
-
 }

@@ -38,6 +38,7 @@ public class Main {
         testAdresDAO(rdao, adao);
         testOVChipkaartDAO(rdao, odao);
         testProductDAO(pdao);
+        testOVChipkaartProduct(rdao, odao, pdao);
 
         closeConnection();
     }
@@ -147,7 +148,7 @@ public class Main {
         System.out.print("[Test] Eerst was het saldo " + kaart.getSaldo());
         kaart.setSaldo(100.0);
         odao.update(kaart);
-        kaart = odao.findById(kaart.getKaartnummer());
+        kaart = odao.findByKaartnummer(kaart.getKaartnummer());
         System.out.println(", na OVChipkaartDAO.update() is het saldo " + kaart.getSaldo());
 
         // Verwijder de zojuist gemaakte reiziger en persisteer
@@ -189,5 +190,49 @@ public class Main {
         pdao.delete(product);
         producten = pdao.findAll();
         System.out.println(producten.size() + " producten");
+    }
+
+    private static void testOVChipkaartProduct(ReizigerDAO rdao, OVChipkaartDAO odao, ProductDAO pdao) throws SQLException {
+        System.out.println("\n\n---------- Test OVChipkaart-Product Relatie -------------");
+
+        // Maak een nieuwe OV-chipkaart aan met een reiziger en persisteer        
+        Reiziger reiziger = new Reiziger(7, "R", "", "Mentink", LocalDate.of(2004, Month.JULY, 15));
+        OVChipkaart kaart = new OVChipkaart(1001, LocalDate.now().plusYears(1), 2, 50.0, reiziger);
+        System.out.print("[Test] Eerst geen producten gekoppeld aan OVChipkaart ");
+        rdao.save(reiziger);
+        odao.save(kaart);
+        List<Product> products = pdao.findByOVChipkaart(kaart);
+        System.out.println("[" + products.size() + " producten]");
+
+        // Maak nieuwe producten aan en koppel ze aan de OV-chipkaart
+        Product product = new Product(10, "Jongerendagkaart", "Voordelig een hele dag reizen voor jongeren.", 7.50);
+        Product product2 = new Product(11, "NS Flex", "Geen idee, maar het heeft kut reclames.", 30.0);
+        product.addKaart(kaart);
+        product2.addKaart(kaart);
+
+        // Persisteer de zojuist gemaakte producten
+        System.out.print("[Test] Eerst " + products.size() + " producten, na ProductDAO.save() ");
+        pdao.save(product);
+        pdao.save(product2);
+        products = pdao.findByOVChipkaart(kaart);
+        System.out.println("[" + products.size() + " producten]");
+        
+        // Pas de producten van de OV-chipkaart aan en persisteer
+        System.out.print("[Test] Eerst " + products.size() + " producten, na OVChipkaartDAO.update() ");
+        kaart.removeProduct(product);
+        odao.update(kaart);
+        products = pdao.findByOVChipkaart(kaart);
+        System.out.println("[" + products.size() + " producten]");    
+
+        // Verwijder een product dat gekoppeld is aan een OV-chipkaart en persisteer
+        System.out.print("[Test] Eerst " + products.size() + " producten, na ProductDAO.delete() ");
+        pdao.delete(product2);
+        products = pdao.findByOVChipkaart(kaart);
+        System.out.println("[" + products.size() + " producten]");
+        
+        // Verwijder de tijdelijk gemaakte reiziger, OV-chipkaart en product
+        pdao.delete(product);
+        odao.delete(kaart);
+        rdao.delete(reiziger);
     }
 }
