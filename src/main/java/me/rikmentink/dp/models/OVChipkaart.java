@@ -11,7 +11,7 @@ public class OVChipkaart {
     private double saldo;
 
     private Reiziger reiziger;
-    private List<Product> producten;
+    private List<Integer> producten = new ArrayList<>();
 
     public OVChipkaart(int kaartnummer, LocalDate geldigTot, int klasse, double saldo, Reiziger reiziger) {
         this.kaartnummer = kaartnummer;
@@ -19,7 +19,6 @@ public class OVChipkaart {
         this.klasse = klasse;
         this.saldo = saldo;
         this.reiziger = reiziger;
-        producten = new ArrayList<Product>();
     }
 
     public int getKaartnummer() {
@@ -62,31 +61,33 @@ public class OVChipkaart {
         this.reiziger = reiziger;
     }
 
-    public List<Product> getProducten() {
-        return this.producten;
-    }
-
     public void addProduct(Product product) {
-        if (!producten.contains(product)) {
-            this.producten.add(product);
-            product.addKaart(this);
+        int productNummer = product.getProductNummer();
+        if (!this.producten.contains(productNummer)) {
+            producten.add(productNummer);
+            product.getKaarten().add(this.kaartnummer);
         }
-    }
-
-    public void setProducten(List<Product> producten) {
-        this.producten = producten;
     }
 
     public void removeProduct(Product product) {
-        if (producten.contains(product)) {
-            this.producten.remove(product);
-            product.removeKaart(this);
+        int productNummer = product.getProductNummer();
+        if (producten.contains(productNummer)) {
+            producten.remove(Integer.valueOf(productNummer));
+            product.getKaarten().remove(Integer.valueOf(this.kaartnummer));
         }
+    }
+
+    public List<Integer> getProducten() {
+        return this.producten;
+    }
+
+    public void setProducten(List<Integer> producten) { 
+        this.producten = producten;
     }
 
     @Override
     public String toString() {
         return "OVChipkaart [kaartnummer=" + kaartnummer + ", geldigTot=" + geldigTot + ", klasse=" + klasse
-                + ", saldo=" + saldo + ", reiziger=" + reiziger + "]";
+                + ", saldo=" + saldo + ", reiziger=" + reiziger + ", producten=" + producten + "]";
     }
 }

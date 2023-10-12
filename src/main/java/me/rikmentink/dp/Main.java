@@ -9,18 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Properties;
 
-import me.rikmentink.dp.models.Adres;
-import me.rikmentink.dp.models.AdresDAO;
-import me.rikmentink.dp.models.AdresDAOPsql;
-import me.rikmentink.dp.models.OVChipkaart;
-import me.rikmentink.dp.models.OVChipkaartDAO;
-import me.rikmentink.dp.models.OVChipkaartDAOPsql;
-import me.rikmentink.dp.models.Product;
-import me.rikmentink.dp.models.ProductDAO;
-import me.rikmentink.dp.models.ProductDAOPsql;
-import me.rikmentink.dp.models.Reiziger;
-import me.rikmentink.dp.models.ReizigerDAO;
-import me.rikmentink.dp.models.ReizigerDAOPsql;
+import me.rikmentink.dp.models.*;
 
 public class Main {
     private static String DATABASE_URL = "jdbc:postgresql://localhost/hu-dp";
@@ -33,6 +22,8 @@ public class Main {
         AdresDAO adao = new AdresDAOPsql(conn);
         OVChipkaartDAO odao = new OVChipkaartDAOPsql(conn);
         ProductDAO pdao = new ProductDAOPsql(conn);
+        odao.setProductDAO(pdao);
+        pdao.setKaartDAO(odao);
         
         testReizigerDAO(rdao);
         testAdresDAO(rdao, adao);
@@ -206,26 +197,36 @@ public class Main {
 
         // Maak nieuwe producten aan en koppel ze aan de OV-chipkaart
         Product product = new Product(10, "Jongerendagkaart", "Voordelig een hele dag reizen voor jongeren.", 7.50);
-        Product product2 = new Product(11, "NS Flex", "Geen idee, maar het heeft kut reclames.", 30.0);
+        Product product2 = new Product(11, "NS Flex", "Geen idee, maar het heeft irritante reclames.", 30.0);
         product.addKaart(kaart);
         product2.addKaart(kaart);
 
         // Persisteer de zojuist gemaakte producten
-        System.out.print("[Test] Eerst " + products.size() + " producten, na ProductDAO.save() ");
+        System.out.println("\n[Test] Eerst " + products.size() + " producten, na ProductDAO.save():");
         pdao.save(product);
         pdao.save(product2);
         products = pdao.findByOVChipkaart(kaart);
-        System.out.println("[" + products.size() + " producten]");
+        
+        int i = 0;
+        for (Product p : products) {
+            System.out.println(i+1 + ": " + p);
+            i++;
+        }  
         
         // Pas de producten van de OV-chipkaart aan en persisteer
-        System.out.print("[Test] Eerst " + products.size() + " producten, na OVChipkaartDAO.update() ");
+        System.out.println("\n[Test] Eerst " + products.size() + " producten, na OVChipkaartDAO.update():");
         kaart.removeProduct(product);
         odao.update(kaart);
         products = pdao.findByOVChipkaart(kaart);
-        System.out.println("[" + products.size() + " producten]");    
+
+        i = 0;
+        for (Product p : products) {
+            System.out.println(i+1 + ": " + p);
+            i++;
+        }  
 
         // Verwijder een product dat gekoppeld is aan een OV-chipkaart en persisteer
-        System.out.print("[Test] Eerst " + products.size() + " producten, na ProductDAO.delete() ");
+        System.out.print("\n[Test] Eerst " + products.size() + " producten, na ProductDAO.delete() ");
         pdao.delete(product2);
         products = pdao.findByOVChipkaart(kaart);
         System.out.println("[" + products.size() + " producten]");

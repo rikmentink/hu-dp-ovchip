@@ -6,12 +6,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ProductDAOPsql implements ProductDAO {
     private Connection conn;
+    private OVChipkaartDAO odao;
 
     public ProductDAOPsql(Connection conn) {
         this.conn = conn;
+    }
+
+    public void setKaartDAO(OVChipkaartDAO odao) {
+        this.odao = odao;
     }
 
     @Override
@@ -28,10 +34,10 @@ public class ProductDAOPsql implements ProductDAO {
             productStmt.execute();
 
             // Insert associations to OV-chipkaarten for the newly created product
-            for (OVChipkaart kaart : product.getKaarten()) {
-                if (!this.checkAssociationExists(kaart.getKaartnummer(), product.getProductNummer())) {
+            for (int kaartNummer : product.getKaarten()) {
+                if (!this.checkAssociationExists(kaartNummer, product.getProductNummer())) {
                     PreparedStatement juncStmt = conn.prepareStatement("INSERT INTO ov_chipkaart_product VALUES (?, ?)");
-                    juncStmt.setInt(1, kaart.getKaartnummer());
+                    juncStmt.setInt(1, kaartNummer);
                     juncStmt.setInt(2, product.getProductNummer());
                     juncStmt.execute();
                 }
@@ -68,9 +74,9 @@ public class ProductDAOPsql implements ProductDAO {
             juncDelStmt.execute();
 
             // Re-insert associations for the updated product
-            for (OVChipkaart kaart : product.getKaarten()) {
+            for (int kaartNummer : product.getKaarten()) {
                 PreparedStatement juncStmt = conn.prepareStatement("INSERT INTO ov_chipkaart_product VALUES (?, ?)");
-                juncStmt.setInt(1, kaart.getKaartnummer());
+                juncStmt.setInt(1, kaartNummer);
                 juncStmt.setInt(2, product.getProductNummer());
                 juncStmt.execute();
             }
@@ -116,17 +122,29 @@ public class ProductDAOPsql implements ProductDAO {
     public Product findByProductNummer(int productNummer) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("SELECT * FROM product WHERE product_nummer = ?");
         stmt.setInt(1, productNummer);
+        
         ResultSet rs = stmt.executeQuery();
-
-        Product product = null;
         while (rs.next()) {
-            product = new Product(
-                    rs.getInt("product_nummer"),
-                    rs.getString("naam"),
-                    rs.getString("beschrijving"),
-                    rs.getDouble("prijs"));
+            Product product = new Product(
+                rs.getInt("product_nummer"),
+                rs.getString("naam"),
+                rs.getString("beschrijving"),
+                rs.getDouble("prijs"));
+            
+            PreparedStatement kaartStmt = conn.prepareStatement("SELECT kaart_nummer FROM ov_chipkaart_product WHERE product_nummer = ?");
+            kaartStmt.setInt(1, product.getProductNummer());
+        
+            ResultSet kaartRs = kaartStmt.executeQuery();
+            List<Integer> kaartIds = new ArrayList<>();
+            while (kaartRs.next()) {
+                kaartIds.add(kaartRs.getInt("product_nummer"));
+            }
+        
+            product.setKaarten(kaartIds);
+            return product;
         }
-        return product;
+
+        return null;
     }
 
     @Override
@@ -145,6 +163,16 @@ public class ProductDAOPsql implements ProductDAO {
                     rs.getString("beschrijving"),
                     rs.getDouble("prijs"));
             
+            PreparedStatement kaartStmt = conn.prepareStatement("SELECT kaart_nummer FROM ov_chipkaart_product WHERE product_nummer = ?");
+            kaartStmt.setInt(1, product.getProductNummer());
+        
+            ResultSet kaartRs = kaartStmt.executeQuery();
+            List<Integer> kaartIds = new ArrayList<>();
+            while (kaartRs.next()) {
+                kaartIds.add(kaartRs.getInt("kaart_nummer"));
+            }
+        
+            product.setKaarten(kaartIds);
             producten.add(product);
         }
 
@@ -163,6 +191,17 @@ public class ProductDAOPsql implements ProductDAO {
                     rs.getString("naam"),
                     rs.getString("beschrijving"),
                     rs.getDouble("prijs"));
+
+            PreparedStatement kaartStmt = conn.prepareStatement("SELECT kaart_nummer FROM ov_chipkaart_product WHERE product_nummer = ?");
+            kaartStmt.setInt(1, product.getProductNummer());
+        
+            ResultSet kaartRs = kaartStmt.executeQuery();
+            List<Integer> kaartIds = new ArrayList<>();
+            while (kaartRs.next()) {
+                kaartIds.add(kaartRs.getInt("kaart_nummer"));
+            }
+        
+            product.setKaarten(kaartIds);
             producten.add(product);
         }
         return producten;
